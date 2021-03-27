@@ -29,7 +29,8 @@ public class TextProcessingService {
 		CompletableFuture<?>[] futures = IntStream
 				.range(requestParams.getStartParagraph(), requestParams.getEndParagraph() + 1).boxed()
 				.map(index -> new ProcessRequestRunnable(index, requestParams, bagOfWords, avgParagraph))
-				.map(runnable -> CompletableFuture.runAsync(runnable, threadPool)).toArray(CompletableFuture[]::new);
+				.map(runnable -> CompletableFuture.runAsync(runnable, threadPool))
+				.toArray(CompletableFuture[]::new);
 
 		CompletableFuture.allOf(futures).join();
 

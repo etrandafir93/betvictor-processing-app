@@ -1,4 +1,4 @@
-package ro.etr.victorbet.processingapp.utils;
+package ro.etr.victorbet.processingapp.service.nlp;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
