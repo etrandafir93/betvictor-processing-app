@@ -8,6 +8,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import ro.etr.victorbet.processingapp.infrastructure.RandomTextResponse;
+import ro.etr.victorbet.processingapp.service.nlp.BagOfWords;
+import ro.etr.victorbet.processingapp.service.nlp.NaturalLanguageProcessor;
 
  
 public class NaturalLanguageProcessorTest {
@@ -27,11 +29,14 @@ public class NaturalLanguageProcessorTest {
 	@ParameterizedTest
 	@CsvSource({"0,0", "1,1", "5,5", "100,100"})
 	public void testAddingToBagOfWordsMap(int input, int expected) {
+		
 		RandomTextResponse dummyResponse = new RandomTextResponse();
 		dummyResponse.setTextOut( paragraphs(input) );
-		nlp.process( dummyResponse );
-		nlp.getBagOfWords().keySet()
-			.forEach( word -> assertThat( nlp.getBagOfWords().get( word ).get() ).isEqualTo( expected ) );
+		
+		BagOfWords words = nlp.process( dummyResponse );
+		
+		words.getWords().values()
+			.forEach( (count) -> { assertThat( count.get() ).isEqualTo( expected ); } );
 	}
 	
 	

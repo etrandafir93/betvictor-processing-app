@@ -1,40 +1,28 @@
-package ro.etr.victorbet.processingapp.service;
+package ro.etr.victorbet.processingapp.service.nlp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
-import lombok.Getter;
 import ro.etr.victorbet.processingapp.infrastructure.RandomTextResponse;
-import ro.etr.victorbet.processingapp.utils.MutableInt;
 
 @Service
 public class NaturalLanguageProcessor {
 	
-	@Getter
-	private Map<String, MutableInt> bagOfWords = new Hashtable<>();
 
-	public void process(RandomTextResponse response) {
+	public BagOfWords process(RandomTextResponse response) {
 		
-		List<String> paragraphs = breakIntoParagraphs( response.getTextOut() );
+		BagOfWords bagOfWords = new BagOfWords();
 		
-		paragraphs.stream()
+		breakIntoParagraphs( response.getTextOut() )
+			.stream()
 			.map( this :: breakIntoWords )
 			.flatMap( List :: stream )
-			.forEach(word -> { 
-				if( bagOfWords.containsKey(word) ) {
-					bagOfWords.get(word).increment();
-				} else {
-					bagOfWords.put(word, new MutableInt());
-				}
-			});
-
+			.forEach( bagOfWords :: add );
 		
+		return bagOfWords;
 	}
 
 	public List<String> breakIntoParagraphs(String html) {

@@ -1,12 +1,22 @@
 package ro.etr.victorbet.processingapp.utils;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
 public class MutableInt 
 {
-	int value = 1;
-
+	private int value = 1;
+	
 	public void increment() {
 		++value;
 	}
+	
+	public void increment(int units) {
+		value += units;
+	}
+	
 	public int get() {
 		return value;
 	}

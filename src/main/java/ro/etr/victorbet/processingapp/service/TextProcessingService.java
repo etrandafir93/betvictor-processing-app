@@ -8,8 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import lombok.Getter;
 import ro.etr.victorbet.processingapp.infrastructure.RandomTextClient;
 import ro.etr.victorbet.processingapp.infrastructure.RandomTextResponse;
+import ro.etr.victorbet.processingapp.service.nlp.BagOfWords;
+import ro.etr.victorbet.processingapp.service.nlp.NaturalLanguageProcessor;
 
 @Service
 public class TextProcessingService {
@@ -20,6 +23,9 @@ public class TextProcessingService {
     
     @Autowired
     private ApplicationContext context;
+
+    @Getter
+    private BagOfWords bagOfWords = new BagOfWords();
     
 	public void process(ProcessRequestParams requestParams) throws IOException, InterruptedException {
 		
@@ -30,7 +36,8 @@ public class TextProcessingService {
 	    	.map(index -> {
     			Runnable task = () -> {
 	    			RandomTextResponse response = new RandomTextClient().requestData(index, requestParams);
-	    			responseProcessor.process( response );
+					BagOfWords newWords = new NaturalLanguageProcessor().process( response );
+					bagOfWords.merge( newWords );
 	    		};
 	    		return task; 
     		})
