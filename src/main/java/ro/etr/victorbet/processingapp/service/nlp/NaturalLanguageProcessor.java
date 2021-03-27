@@ -16,7 +16,7 @@ public class NaturalLanguageProcessor {
 		
 		BagOfWords bagOfWords = new BagOfWords();
 		
-		breakIntoParagraphs( response.getTextOut() )
+		breakIntoParagraphs( response.getTextOut().toLowerCase() )
 			.stream()
 			.map( this :: breakIntoWords )
 			.flatMap( List :: stream )
@@ -29,8 +29,8 @@ public class NaturalLanguageProcessor {
 		if (html.length() == 0) {
 			return new ArrayList<>();
 		}
-		html = html.substring("<p>".length());
-		return Arrays.asList(html.split("<p>|.</p> <p>|.</p> "));
+		html = html.substring("<p>".length()).replaceAll(".</p>","");
+		return Arrays.asList(html.split("<p>"));
 	}
 
 	public List<String> breakIntoWords(String paragraph) {

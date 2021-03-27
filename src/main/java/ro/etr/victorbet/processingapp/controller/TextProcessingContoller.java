@@ -30,9 +30,9 @@ public class TextProcessingContoller {
 	
 	@GetMapping("text")
 	private String processText(@RequestParam(name = "p_start") int startParagraph, 
-							@RequestParam(name = "p_end") int endParagraph, 
-							@RequestParam(name = "w_count_min") int minWords, 
-							@RequestParam(name = "w_count_max") int maxWords) throws IOException, InterruptedException {
+				@RequestParam(name = "p_end") int endParagraph, 
+				@RequestParam(name = "w_count_min") int minWords, 
+				@RequestParam(name = "w_count_max") int maxWords) throws IOException, InterruptedException {
 
 		logger.info( "GET /text  paragraphs: {}-{} , word count: {}-{}", startParagraph, endParagraph, minWords, maxWords);
 		
@@ -43,9 +43,7 @@ public class TextProcessingContoller {
 			.maxWordCount(maxWords)
 			.build();
 		
-		service.process( request );
-		
-		return "TextProcessingContoller is alive!";
+		return service.process( request );
 	}
 	 
 

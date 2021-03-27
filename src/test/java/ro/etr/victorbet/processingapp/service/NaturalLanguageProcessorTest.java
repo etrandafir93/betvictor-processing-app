@@ -22,8 +22,13 @@ public class NaturalLanguageProcessorTest {
 	@ParameterizedTest
 	@CsvSource({"0,0", "1,1", "5,5", "100,100"})
 	public void testBreakingIntoParagraphs(int input, int expected) {
+		
 		List<String> result = nlp.breakIntoParagraphs( paragraphs(input) );
+		
 		assertThat( result ).hasSize( expected );
+		result.forEach( word -> { 
+			assertThat( word ).doesNotContain("<p>","</p>","."); 
+		});
 	}
 
 	@ParameterizedTest
@@ -38,6 +43,7 @@ public class NaturalLanguageProcessorTest {
 		words.getWords().values()
 			.forEach( (count) -> { assertThat( count.get() ).isEqualTo( expected ); } );
 	}
+	
 	
 	
 	private String paragraphs(int numberOfParagraphs) {
