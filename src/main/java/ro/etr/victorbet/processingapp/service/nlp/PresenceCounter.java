@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import lombok.Getter;
 import ro.etr.victorbet.processingapp.utils.MutableInt;
 
-public abstract class NlpAnalysis <T> {
+public class PresenceCounter <T> {
 	
 	@Getter
 	private Map<T, MutableInt> values = new Hashtable<>();
@@ -29,7 +29,7 @@ public abstract class NlpAnalysis <T> {
 		return values.entrySet();
 	}
 
-	public void merge(NlpAnalysis<T> newWords) {
+	public void merge(PresenceCounter<T> newWords) {
 		newWords.getEntrySet()
 			.forEach( (newWord) -> { 
 				add( newWord.getKey(), newWord.getValue().get() ); 

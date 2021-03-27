@@ -4,16 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import lombok.Getter;
 import ro.etr.victorbet.processingapp.infrastructure.RandomTextResponse;
 
 @Getter
 public class NaturalLanguageProcessor {
 
-	private AvgParagraphSize avgParagraphSize;
-	private BagOfWords bagOfWords;
+	private PresenceCounter<Integer> avgParagraphSize;
+	private PresenceCounter<String> bagOfWords;
 
 	public void process(RandomTextResponse response) {
 		
@@ -24,9 +22,9 @@ public class NaturalLanguageProcessor {
 	}
 
 	
-	private AvgParagraphSize getAvgParagraphSize(List<String> paragraphs) {
+	private PresenceCounter<Integer> getAvgParagraphSize(List<String> paragraphs) {
 
-		AvgParagraphSize avgParagraphSize = new AvgParagraphSize();
+		PresenceCounter<Integer> avgParagraphSize = new PresenceCounter<>();
 		
 		paragraphs.stream()
 			.map( this :: breakIntoWords )
@@ -36,9 +34,9 @@ public class NaturalLanguageProcessor {
 		return avgParagraphSize;
 	}
 	
-	private BagOfWords getBagOfWords(List<String> paragraphs) {
+	private PresenceCounter<String> getBagOfWords(List<String> paragraphs) {
 		
-		BagOfWords bagOfWords = new BagOfWords();
+		PresenceCounter<String> bagOfWords = new PresenceCounter<>();
 		
 		paragraphs.stream()
 			.map( this :: breakIntoWords )

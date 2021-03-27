@@ -3,7 +3,6 @@ package ro.etr.victorbet.processingapp.service;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 
-import ro.etr.victorbet.processingapp.service.nlp.AvgParagraphSize;
-import ro.etr.victorbet.processingapp.service.nlp.BagOfWords;
+import ro.etr.victorbet.processingapp.service.nlp.PresenceCounter;
 
 @Service
 public class TextProcessingService {
@@ -23,8 +21,8 @@ public class TextProcessingService {
 
 	public String process(ProcessRequestParams requestParams) throws IOException, InterruptedException {
 
-		BagOfWords bagOfWords = new BagOfWords();
-		AvgParagraphSize avgParagraph = new AvgParagraphSize();
+		PresenceCounter<Integer> bagOfWords = new PresenceCounter<>();
+		PresenceCounter<String> avgParagraph = new PresenceCounter<>();
 
 		ExecutorService threadPool = (ExecutorService) context.getBean("taskExecutor");
 
