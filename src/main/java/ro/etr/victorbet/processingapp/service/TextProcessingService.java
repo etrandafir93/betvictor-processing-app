@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 
+import ro.etr.victorbet.processingapp.service.nlp.AvgParagraphSize;
 import ro.etr.victorbet.processingapp.service.nlp.BagOfWords;
 
 @Service
@@ -23,12 +24,13 @@ public class TextProcessingService {
 	public String process(ProcessRequestParams requestParams) throws IOException, InterruptedException {
 
 		BagOfWords bagOfWords = new BagOfWords();
+		AvgParagraphSize avgParagraph = new AvgParagraphSize();
 
 		ExecutorService threadPool = (ExecutorService) context.getBean("taskExecutor");
 
 		CompletableFuture<?>[] futures = IntStream
 				.range(requestParams.getStartParagraph(), requestParams.getEndParagraph() + 1).boxed()
-				.map(index -> new ProcessRequestRunnable(index, requestParams, bagOfWords))
+				.map(index -> new ProcessRequestRunnable(index, requestParams, bagOfWords, avgParagraph))
 				.map(runnable -> CompletableFuture.runAsync(runnable, threadPool)).toArray(CompletableFuture[]::new);
 
 		CompletableFuture.allOf(futures).join();

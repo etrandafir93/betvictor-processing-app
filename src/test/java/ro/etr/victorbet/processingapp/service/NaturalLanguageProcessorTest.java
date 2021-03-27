@@ -8,7 +8,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import ro.etr.victorbet.processingapp.infrastructure.RandomTextResponse;
-import ro.etr.victorbet.processingapp.service.nlp.BagOfWords;
 import ro.etr.victorbet.processingapp.service.nlp.NaturalLanguageProcessor;
 
  
@@ -38,9 +37,9 @@ public class NaturalLanguageProcessorTest {
 		RandomTextResponse dummyResponse = new RandomTextResponse();
 		dummyResponse.setTextOut( paragraphs(input) );
 		
-		BagOfWords words = nlp.process( dummyResponse );
+		nlp.process( dummyResponse );
 		
-		words.getWords().values()
+		nlp.getBagOfWords().getValues().values()
 			.forEach( (count) -> { assertThat( count.get() ).isEqualTo( expected ); } );
 	}
 	

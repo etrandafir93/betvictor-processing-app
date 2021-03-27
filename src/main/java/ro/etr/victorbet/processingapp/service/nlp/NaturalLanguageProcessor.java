@@ -6,18 +6,41 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import lombok.Getter;
 import ro.etr.victorbet.processingapp.infrastructure.RandomTextResponse;
 
-@Service
+@Getter
 public class NaturalLanguageProcessor {
-	
 
-	public BagOfWords process(RandomTextResponse response) {
+	private AvgParagraphSize avgParagraphSize;
+	private BagOfWords bagOfWords;
+
+	public void process(RandomTextResponse response) {
+		
+		List<String> paragraphs = breakIntoParagraphs( response.getTextOut().toLowerCase() );
+		
+		avgParagraphSize = getAvgParagraphSize(paragraphs);
+		bagOfWords = getBagOfWords(paragraphs);
+	}
+
+	
+	private AvgParagraphSize getAvgParagraphSize(List<String> paragraphs) {
+
+		AvgParagraphSize avgParagraphSize = new AvgParagraphSize();
+		
+		paragraphs.stream()
+			.map( this :: breakIntoWords )
+			.map( List :: size )
+			.forEach( avgParagraphSize :: add );
+		
+		return avgParagraphSize;
+	}
+	
+	private BagOfWords getBagOfWords(List<String> paragraphs) {
 		
 		BagOfWords bagOfWords = new BagOfWords();
 		
-		breakIntoParagraphs( response.getTextOut().toLowerCase() )
-			.stream()
+		paragraphs.stream()
 			.map( this :: breakIntoWords )
 			.flatMap( List :: stream )
 			.forEach( bagOfWords :: add );
