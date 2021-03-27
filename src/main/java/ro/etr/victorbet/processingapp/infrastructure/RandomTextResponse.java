@@ -1,6 +1,5 @@
 package ro.etr.victorbet.processingapp.infrastructure;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 
 import lombok.Data;
