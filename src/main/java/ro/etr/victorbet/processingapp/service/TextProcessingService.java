@@ -33,20 +33,20 @@ public class TextProcessingService {
 		
 		long startProcessingTimestamp = System.currentTimeMillis();
 		
-		CompletableFuture<?>[] tasks = computeAndSync(requestParams, bagOfWords, paragraphSizes, warnings);
+		computeAndSync(requestParams, bagOfWords, paragraphSizes, warnings);
 		
 		long totalProcessingTime = System.currentTimeMillis() - startProcessingTimestamp;
 		
 		return ProcessedTextDto.builder()
 			.mostFrequentWord( getMostFrequentWord( bagOfWords ) )
 			.totalProcessingTimeInMllis( totalProcessingTime )
-			.avgProcessingTimeInMillis( totalProcessingTime / tasks.length )
+			.avgProcessingTimeInMillis( totalProcessingTime / getNumberOfParagraphs(paragraphSizes) )
 			.avgParagraphSize( getNumberOfWords( paragraphSizes ) )
 			.warnings( warnings )
 			.build();
 	}
 
-	private CompletableFuture<?>[] computeAndSync(ProcessRequestParams requestParams, 
+	private void computeAndSync(ProcessRequestParams requestParams, 
 													PresenceCounter<String> bagOfWords,
 													PresenceCounter<Integer> paragraphSizes,
 													Set<Warning> warnings ) 
@@ -65,8 +65,6 @@ public class TextProcessingService {
 			.toArray(CompletableFuture[]::new);
 
 		CompletableFuture.allOf(tasks).join();
-		
-		return tasks;
 	}
 
 	private String getMostFrequentWord(PresenceCounter<String> bagOfWords) {
@@ -78,17 +76,19 @@ public class TextProcessingService {
 
 	private int getNumberOfWords(PresenceCounter<Integer> paragraphSizes) {
 		
-		int nrOfParagraphs = paragraphSizes.getEntrySet().stream()
-			.map( entry -> entry.getValue().get() )
-			.mapToInt(Integer :: intValue)
-			.sum();
-		
 		int nrOfWords = paragraphSizes.getEntrySet().stream()
 			.map( entry -> entry.getKey() * entry.getValue().get() )
 			.mapToInt(Integer :: intValue)
 			.sum();
 		
-		return nrOfWords / nrOfParagraphs;
+		return nrOfWords / getNumberOfParagraphs(paragraphSizes);
+	}
+
+	private int getNumberOfParagraphs(PresenceCounter<Integer> paragraphSizes) {
+		return paragraphSizes.getEntrySet().stream()
+			.map( entry -> entry.getValue().get() )
+			.mapToInt(Integer :: intValue)
+			.sum();
 	}
 
 }
