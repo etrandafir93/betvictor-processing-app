@@ -53,8 +53,7 @@ public class TextProcessingService {
 	}
 
 	private String getMostFrequentWord(PresenceCounter<String> bagOfWords) {
-		return bagOfWords.getEntrySet()
-			.stream()
+		return bagOfWords.getEntrySet().stream()
 			.max( PresenceCounter.compareEntriesByPresence )
 			.get()
 			.getKey();
