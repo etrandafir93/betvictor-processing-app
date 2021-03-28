@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import ro.etr.victorbet.processingapp.config.Config;
 import ro.etr.victorbet.processingapp.dto.ProcessedTextDto;
 import ro.etr.victorbet.processingapp.service.nlp.PresenceCounter;
 
@@ -18,6 +19,9 @@ public class TextProcessingService {
 	@Autowired
     @Qualifier("taskExecutor")
 	private ExecutorService threadPool;
+
+	@Autowired
+	private Config config;
 
 	public ProcessedTextDto process(ProcessRequestParams requestParams) throws IOException, InterruptedException {
 
@@ -44,7 +48,7 @@ public class TextProcessingService {
 	{
 		CompletableFuture<?>[] tasks = IntStream
 			.range(requestParams.getStartParagraph(), requestParams.getEndParagraph() + 1).boxed()
-			.map(index -> new ProcessRequestRunnable(index, requestParams, paragraphSizes, bagOfWords))
+			.map(index -> new ProcessRequestRunnable(index, requestParams, paragraphSizes, bagOfWords, config.getRandomTextApiUrl()))
 			.map(runnable -> CompletableFuture.runAsync(runnable, threadPool))
 			.toArray(CompletableFuture[]::new);
 

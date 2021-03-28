@@ -13,11 +13,12 @@ public class ProcessRequestRunnable implements Runnable {
 	private ProcessRequestParams requestParams;
 	private PresenceCounter<Integer> avgParagraph;
 	private PresenceCounter<String> bagOfWords;
+	private String url;
 
 	@Override
 	public void run() {
 		
-		RandomTextResponse response = new RandomTextClient().requestData(index, requestParams);
+		RandomTextResponse response = new RandomTextClient(url).requestData(index, requestParams);
 		NaturalLanguageProcessor nlp = new NaturalLanguageProcessor();
 		
 		nlp.process(response);

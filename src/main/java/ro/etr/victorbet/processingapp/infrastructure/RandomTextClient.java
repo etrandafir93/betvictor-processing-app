@@ -8,13 +8,18 @@ import java.net.http.HttpResponse.BodyHandlers;
 
 import com.google.gson.Gson;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import ro.etr.victorbet.processingapp.service.ProcessRequestParams;
 
+
+@RequiredArgsConstructor
 public class RandomTextClient {
 
-	private static final String BASE_URL = "http://www.randomtext.me/api/giberish/p-%d/%d-%d";
-
+	@NonNull
+	private String randomTextUrl;
+	
 	private HttpClient client = HttpClient.newHttpClient();
 	
 	@SneakyThrows
@@ -30,7 +35,7 @@ public class RandomTextClient {
 	}
 
 	private URI getUrl(int paragraphNumber, int minWords, int maxWords) {
-		return URI.create(String.format(BASE_URL, paragraphNumber, minWords, maxWords));
+		return URI.create(String.format(randomTextUrl, paragraphNumber, minWords, maxWords));
 	}
 
 }
