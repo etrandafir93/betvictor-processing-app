@@ -24,13 +24,13 @@ public class TextProcessingContoller {
     private TextProcessingService service;
     
 	@GetMapping("isAlive")
-	private String isAlive() {
+	public String isAlive() {
 		logger.info( "GET /isAlive");
 		return "TextProcessingContoller is alive!";
 	}
 	
 	@GetMapping("text")
-	private ProcessedTextDto processText(@RequestParam(name = "p_start") int startParagraph, 
+	public ProcessedTextDto processText(@RequestParam(name = "p_start") int startParagraph, 
 				@RequestParam(name = "p_end") int endParagraph, 
 				@RequestParam(name = "w_count_min") int minWords, 
 				@RequestParam(name = "w_count_max") int maxWords) throws IOException, InterruptedException {
