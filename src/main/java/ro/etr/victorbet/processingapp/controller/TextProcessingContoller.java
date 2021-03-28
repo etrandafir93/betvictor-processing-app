@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +32,7 @@ public class TextProcessingContoller {
 	}
 	
 	@GetMapping("text")
-	public ProcessedTextDto processText(@RequestParam(name = "p_start") int startParagraph, 
+	public ResponseEntity<?> processText(@RequestParam(name = "p_start") int startParagraph, 
 				@RequestParam(name = "p_end") int endParagraph, 
 				@RequestParam(name = "w_count_min") int minWords, 
 				@RequestParam(name = "w_count_max") int maxWords) throws IOException, InterruptedException {
@@ -44,7 +46,12 @@ public class TextProcessingContoller {
 			.maxWordCount(maxWords)
 			.build();
 		
-		return service.process( request );
+		try {
+			ProcessedTextDto dto = service.process( request );
+			return new ResponseEntity<ProcessedTextDto>(dto, HttpStatus.OK);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 	 
 

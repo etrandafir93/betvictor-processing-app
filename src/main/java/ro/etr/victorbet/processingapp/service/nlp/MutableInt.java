@@ -20,4 +20,9 @@ public class MutableInt
 	public int get() {
 		return value;
 	}
+
+	@Override
+	public String toString() {
+		return "MutableInt [" + value + "]";
+	}
 }

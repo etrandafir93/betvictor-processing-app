@@ -2,101 +2,61 @@ package ro.etr.victorbet.processingapp;
 
 import java.io.IOException;
 
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.google.gson.Gson;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-
-import ro.etr.victorbet.processingapp.config.Config;
 import ro.etr.victorbet.processingapp.controller.TextProcessingContoller;
 import ro.etr.victorbet.processingapp.dto.ProcessedTextDto;
-import ro.etr.victorbet.processingapp.infrastructure.RandomTextResponse;
 
-@SpringBootTest
-class ProcessingAppApplicationTests {
+class ProcessingAppApplicationTests extends EndToEndTestBase {
 
-	public static WireMockServer wireMockServer;
 
 	@Autowired
 	private TextProcessingContoller controller;
 
-	@Autowired
-	private Config config;
 
-	@BeforeAll
-	public static void setup() {
-		wireMockServer = new WireMockServer(9999);
-		wireMockServer.start();
-	}
+	@Test
+	void calculateAverage() throws IOException, InterruptedException {
 
-	@AfterAll
-	public static void teardown() {
-		wireMockServer.stop();
-	}
+		ProcessedTextDto response = (ProcessedTextDto)controller.processText(4, 4, 3, 5).getBody();
 
-	@BeforeEach
-	public void before() {
-		config.setRandomTextApiUrl("http://localhost:9999/api/giberish/p-%d/%d-%d");
+		assertThat(response.getAvgParagraphSize()).isEqualTo(4);
 	}
 
 	@Test
-	void simpleFlow() throws IOException, InterruptedException {
+	void calculateMostFreqWord() throws IOException, InterruptedException {
 
-		wireMockServer.stubFor(get(urlPathMatching("/api/giberish/p-1/3-5"))
-			.willReturn(ok()
-				.withBody(aDummyResponse(1,3,5))));
+		ProcessedTextDto response = (ProcessedTextDto)controller.processText(1, 5, 3, 5).getBody();
 
-		ProcessedTextDto response = controller.processText(1, 1, 3, 5);
-
-		Assertions.assertThat(response.getAvgParagraphSize()).isEqualTo(3);
+		assertThat(response.getMostFrequentWord()).isEqualTo("roses");
 	}
 
-	private String aDummyResponse(int count, int minWords, int maxWords) {
+	@Test
+	void testProcessTime() throws IOException, InterruptedException {
 
-		RandomTextResponse response = new RandomTextResponse();
-		response.setType("gibberish");
-		response.setFormat("p");
-		response.setMaxNumber(minWords);
-		response.setNumber(maxWords);
-		response.setTime("15:46:03");
-		response.setAmount(count);
-		response.setTextOut(generateDummyParagraphs(count, minWords, maxWords));
-
-		return new Gson().toJson(response);
-	}
-
-	
-	/*
-	 * (4, 3, 5) => 3 word p, 5 word p, 3 word p, 5 word p
-	 * (4, 3, 3) => 3 word p, 3 word p, 3 word p, 3 word p
-	 * (4, 5, 5) => 5 word p, 5 word p, 5 word p, 5 word p
-	 * & most common word = 'roses'
-	 * */
-	private String generateDummyParagraphs(int count, int minWords, int maxWords) {
+		long start = System.currentTimeMillis();
 		
-		StringBuilder sb = new StringBuilder();
-		String newParagraph = "";
+		// 1 + 2 + 3 + 4 + 5 => 15 paragraphs, 5 requests
+		ProcessedTextDto response = (ProcessedTextDto)controller.processText(1, 5, 3, 5).getBody();
 		
-		for(int i=0; i<count; i++) {
-			if( minWords == maxWords ) {
-				newParagraph = minWords == 3? paragraphWithThreeWords : paragraphWithFiveWords;
-			} else {
-				newParagraph = i % 2 == 0? paragraphWithThreeWords : paragraphWithFiveWords;
-			}
-			sb.append(newParagraph);
-		}
-		return sb.toString();
+		long time = System.currentTimeMillis() - start;
+		long avgTime = time / 5;
+
+		assertThat( response.getTotalProcessingTimeInMllis() ).isStrictlyBetween( time-50, time+50 );
+		assertThat( response.getAvgProcessingTimeInMillis() ).isStrictlyBetween( avgTime-10, avgTime+10 );
 	}
 
-	private String paragraphWithThreeWords = "<p>Roses are red.</p> ";
-	private String paragraphWithFiveWords = "<p>One two three for roses</p> ";
+	@Test
+	void handleBadRequestFromExternalService() throws IOException, InterruptedException {
+
+		// wiremock will return 503 for these values
+		ResponseEntity<?> response = controller.processText(6, 6, 6, 6); 
+		
+		assertThat( response.getStatusCode() ).isEqualTo( HttpStatus.INTERNAL_SERVER_ERROR );
+	}
+
 
 }
