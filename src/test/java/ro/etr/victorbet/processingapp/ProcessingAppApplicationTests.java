@@ -13,7 +13,6 @@ import ro.etr.victorbet.processingapp.dto.ProcessedTextDto;
 
 class ProcessingAppApplicationTests extends EndToEndTestBase {
 
-
 	@Autowired
 	private TextProcessingContoller controller;
 
@@ -27,7 +26,7 @@ class ProcessingAppApplicationTests extends EndToEndTestBase {
 	}
 
 	@Test
-	void calculateMostFreqWord() throws IOException, InterruptedException {
+	void calculateMostFreqWord() {
 
 		ProcessedTextDto response = (ProcessedTextDto)controller.processText(1, 5, 3, 5).getBody();
 
@@ -35,7 +34,7 @@ class ProcessingAppApplicationTests extends EndToEndTestBase {
 	}
 
 	@Test
-	void testProcessTime() throws IOException, InterruptedException {
+	void testProcessTime() {
 
 		long start = System.currentTimeMillis();
 		
@@ -50,12 +49,23 @@ class ProcessingAppApplicationTests extends EndToEndTestBase {
 	}
 
 	@Test
-	void handleBadRequestFromExternalService() throws IOException, InterruptedException {
+	void oneBadRequestShouldNotAffectTheRestOfTheProcessing() {
 
-		// wiremock will return 503 for these values
-		ResponseEntity<?> response = controller.processText(6, 6, 6, 6); 
+		/*
+		 * wiremock will return 
+		 * ok  for p-1/x-x 
+		 * ...
+		 * ok  for p-5/x-x
+		 * 503 for p-6/x-x
+		 * */
+		ProcessedTextDto goodReply = (ProcessedTextDto) controller.processText(1, 5, 3, 3).getBody();
 		
-		assertThat( response.getStatusCode() ).isEqualTo( HttpStatus.INTERNAL_SERVER_ERROR );
+		ResponseEntity<?> response = controller.processText(1, 6, 3, 3);
+		ProcessedTextDto partialReply = (ProcessedTextDto) response.getBody(); 
+
+		assertThat( goodReply.getAvgParagraphSize() ).isEqualTo( partialReply.getAvgParagraphSize() );
+		assertThat( goodReply.getMostFrequentWord() ).isEqualTo( partialReply.getMostFrequentWord() );
+		assertThat( response.getStatusCode() ).isEqualTo( HttpStatus.PARTIAL_CONTENT );
 	}
 
 

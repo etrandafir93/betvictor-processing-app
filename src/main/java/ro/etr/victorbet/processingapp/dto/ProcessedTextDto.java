@@ -1,9 +1,12 @@
 package ro.etr.victorbet.processingapp.dto;
 
+import java.util.Set;
+
 import com.google.gson.annotations.SerializedName;
 
 import lombok.Builder;
 import lombok.Data;
+import ro.etr.victorbet.processingapp.exceptions.Warning;
 
 @Data
 @Builder
@@ -20,4 +23,10 @@ public class ProcessedTextDto {
 
 	@SerializedName("total_processing_time")
 	private long totalProcessingTimeInMllis;
+	
+	private transient Set<Warning> warnings;
+	
+	public boolean withoutWarnings() {
+		return warnings.isEmpty();
+	}
 }

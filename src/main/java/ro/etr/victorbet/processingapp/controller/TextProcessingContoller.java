@@ -1,9 +1,5 @@
 package ro.etr.victorbet.processingapp.controller;
 
-import java.io.IOException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,32 +8,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.slf4j.Slf4j;
 import ro.etr.victorbet.processingapp.dto.ProcessedTextDto;
 import ro.etr.victorbet.processingapp.service.ProcessRequestParams;
 import ro.etr.victorbet.processingapp.service.TextProcessingService;
  
+@Slf4j
 @RestController
 @RequestMapping("betvictor")
 public class TextProcessingContoller {
-
-    private static Logger logger = LoggerFactory.getLogger(TextProcessingContoller.class);
 
     @Autowired
     private TextProcessingService service;
     
 	@GetMapping("isAlive")
 	public String isAlive() {
-		logger.info( "GET /isAlive");
+		log.info( "GET /isAlive");
 		return "TextProcessingContoller is alive!";
 	}
 	
 	@GetMapping("text")
-	public ResponseEntity<?> processText(@RequestParam(name = "p_start") int startParagraph, 
+	public ResponseEntity<?> processText(
+				@RequestParam(name = "p_start") int startParagraph, 
 				@RequestParam(name = "p_end") int endParagraph, 
 				@RequestParam(name = "w_count_min") int minWords, 
-				@RequestParam(name = "w_count_max") int maxWords) throws IOException, InterruptedException {
+				@RequestParam(name = "w_count_max") int maxWords) {
 
-		logger.info( "GET /text  paragraphs: {}-{} , word count: {}-{}", startParagraph, endParagraph, minWords, maxWords);
+		log.info( "GET /text  paragraphs: {}-{} , word count: {}-{}", startParagraph, endParagraph, minWords, maxWords);
 		
 		ProcessRequestParams request = ProcessRequestParams.builder()
 			.startParagraph(startParagraph)
@@ -48,8 +45,10 @@ public class TextProcessingContoller {
 		
 		try {
 			ProcessedTextDto dto = service.process( request );
-			return new ResponseEntity<ProcessedTextDto>(dto, HttpStatus.OK);
-		} catch (Exception e) {
+			HttpStatus statusCode = dto.withoutWarnings()? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT; 
+			return new ResponseEntity<ProcessedTextDto>(dto, statusCode);
+		} 
+		catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}

@@ -1,6 +1,7 @@
 package ro.etr.victorbet.processingapp.service;
 
-import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.IntStream;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import ro.etr.victorbet.processingapp.config.Config;
 import ro.etr.victorbet.processingapp.dto.ProcessedTextDto;
+import ro.etr.victorbet.processingapp.exceptions.Warning;
 import ro.etr.victorbet.processingapp.service.nlp.PresenceCounter;
 
 @Service
@@ -23,14 +25,15 @@ public class TextProcessingService {
 	@Autowired
 	private Config config;
 
-	public ProcessedTextDto process(ProcessRequestParams requestParams) throws IOException, InterruptedException {
+	public ProcessedTextDto process(ProcessRequestParams requestParams) {
 
 		PresenceCounter<String> bagOfWords = new PresenceCounter<>();
 		PresenceCounter<Integer> paragraphSizes = new PresenceCounter<>();
-
+		Set<Warning> warnings = new HashSet<>();
+		
 		long startProcessingTimestamp = System.currentTimeMillis();
 		
-		CompletableFuture<?>[] tasks = computeAndSync(requestParams, bagOfWords, paragraphSizes);
+		CompletableFuture<?>[] tasks = computeAndSync(requestParams, bagOfWords, paragraphSizes, warnings);
 		
 		long totalProcessingTime = System.currentTimeMillis() - startProcessingTimestamp;
 		
@@ -39,20 +42,30 @@ public class TextProcessingService {
 			.totalProcessingTimeInMllis( totalProcessingTime )
 			.avgProcessingTimeInMillis( totalProcessingTime / tasks.length )
 			.avgParagraphSize( getNumberOfWords( paragraphSizes ) )
+			.warnings( warnings )
 			.build();
 	}
 
 	private CompletableFuture<?>[] computeAndSync(ProcessRequestParams requestParams, 
-												PresenceCounter<String> bagOfWords,
-												PresenceCounter<Integer> paragraphSizes) 
+													PresenceCounter<String> bagOfWords,
+													PresenceCounter<Integer> paragraphSizes,
+													Set<Warning> warnings ) 
 	{
-		CompletableFuture<?>[] tasks = IntStream
-			.range(requestParams.getStartParagraph(), requestParams.getEndParagraph() + 1).boxed()
-			.map(index -> new ProcessRequestRunnable(index, requestParams, paragraphSizes, bagOfWords, config.getRandomTextApiUrl()))
+		CompletableFuture<?>[] tasks = IntStream.range(requestParams.getStartParagraph(), requestParams.getEndParagraph() + 1)
+			.boxed() 
+			.map(index -> ProcessRequestRunnable.builder()
+					.index(index)
+					.requestParams(requestParams)
+					.avgParagraph(paragraphSizes)
+					.bagOfWords(bagOfWords)
+					.url(config.getRandomTextApiUrl())
+					.warnings(warnings)
+					.build() ) 
 			.map(runnable -> CompletableFuture.runAsync(runnable, threadPool))
 			.toArray(CompletableFuture[]::new);
 
 		CompletableFuture.allOf(tasks).join();
+		
 		return tasks;
 	}
 

@@ -1,6 +1,9 @@
 package ro.etr.victorbet.processingapp;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -9,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.http.Fault;
 import com.google.gson.Gson;
 
 import ro.etr.victorbet.processingapp.config.Config;
@@ -46,21 +48,26 @@ public abstract class EndToEndTestBase {
 	
 	private static void initDummyResponses() {
 		
-		for(int count = 1; count<=5; count++) {
-			for(int minw = 1; minw<=5; minw++) {
-				for(int maxw = 1; maxw<=5; maxw++) {
-					
+		for(int count = 1; count<=6; count++) {
+			for(int minw = 3; minw<=5; minw+=2) {
+				for(int maxw = 3; maxw<=5; maxw+=2) {
+
 					String path = String.format("/api/giberish/p-%d/%d-%d", count, minw, maxw);
 					
-					wireMockServer.stubFor(get(urlPathMatching( path ))
-							.willReturn(ok().withBody(aDummyResponse( count, minw, maxw ))));
+					if(count == 6) 
+					{
+						wireMockServer.stubFor(get(urlPathMatching( path ))
+								.willReturn( aResponse().withStatus( 503 ) ));
+					} else 
+					{
+						wireMockServer.stubFor(get(urlPathMatching( path ))
+								.willReturn(ok().withBody(aDummyResponse( count, minw, maxw ))));
+					}
 				}	
 			}	
 		}
 		
 
-		wireMockServer.stubFor(get(urlPathMatching( "/api/giberish/p-6/6-6" ))
-				.willReturn( aResponse().withStatus( 503 ) ));
 	}
 
 	private static String aDummyResponse(int count, int minWords, int maxWords) {
