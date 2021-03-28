@@ -1,5 +1,6 @@
 package ro.etr.victorbet.processingapp.service.nlp;
 
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
@@ -34,4 +35,6 @@ public class PresenceCounter <T> {
 				add( newWord.getKey(), newWord.getValue().get() ); 
 			});
 	}
+	
+	public static Comparator<Entry<?, MutableInt>> compareEntriesByPresence = (e1, e2) -> { return e1.getValue().get() - e2.getValue().get(); };
 }
