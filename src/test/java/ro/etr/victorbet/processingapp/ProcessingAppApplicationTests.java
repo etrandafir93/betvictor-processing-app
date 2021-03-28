@@ -1,8 +1,9 @@
 package ro.etr.victorbet.processingapp;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 
-import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,10 +43,10 @@ class ProcessingAppApplicationTests extends EndToEndTestBase {
 		ProcessedTextDto response = (ProcessedTextDto)controller.processText(1, 5, 3, 5).getBody();
 		
 		long time = System.currentTimeMillis() - start;
-		long avgTime = time / 5;
+		long avgTime = time / 15;
 
 		assertThat( response.getTotalProcessingTimeInMllis() ).isStrictlyBetween( time-50, time+50 );
-		assertThat( response.getAvgProcessingTimeInMillis() ).isStrictlyBetween( avgTime-10, avgTime+10 );
+		assertThat( response.getAvgProcessingTimeInMillis() ).isStrictlyBetween( avgTime-5, avgTime+5 );
 	}
 
 	@Test
@@ -67,6 +68,5 @@ class ProcessingAppApplicationTests extends EndToEndTestBase {
 		assertThat( goodReply.getMostFrequentWord() ).isEqualTo( partialReply.getMostFrequentWord() );
 		assertThat( response.getStatusCode() ).isEqualTo( HttpStatus.PARTIAL_CONTENT );
 	}
-
 
 }
