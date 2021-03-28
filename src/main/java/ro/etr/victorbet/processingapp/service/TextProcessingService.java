@@ -1,16 +1,13 @@
 package ro.etr.victorbet.processingapp.service;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
-import com.google.gson.Gson;
 
 import ro.etr.victorbet.processingapp.dto.ProcessedTextDto;
 import ro.etr.victorbet.processingapp.service.nlp.PresenceCounter;
@@ -19,37 +16,40 @@ import ro.etr.victorbet.processingapp.service.nlp.PresenceCounter;
 public class TextProcessingService {
 
 	@Autowired
-	private ApplicationContext context;
+    @Qualifier("taskExecutor")
+	private ExecutorService threadPool;
 
-	public String process(ProcessRequestParams requestParams) throws IOException, InterruptedException {
+	public ProcessedTextDto process(ProcessRequestParams requestParams) throws IOException, InterruptedException {
 
 		PresenceCounter<String> bagOfWords = new PresenceCounter<>();
 		PresenceCounter<Integer> paragraphSizes = new PresenceCounter<>();
 
-		ExecutorService threadPool = (ExecutorService) context.getBean("taskExecutor");
-
-		long startProcessingTimestamp = new Date().getTime();
+		long startProcessingTimestamp = System.currentTimeMillis();
 		
-		CompletableFuture<?>[] tasks = IntStream
-				.range(requestParams.getStartParagraph(), requestParams.getEndParagraph() + 1).boxed()
-				.map(index -> new ProcessRequestRunnable(index, requestParams, paragraphSizes, bagOfWords))
-				.map(runnable -> CompletableFuture.runAsync(runnable, threadPool))
-				.toArray(CompletableFuture[]::new);
-
-		CompletableFuture.allOf(tasks).join();
-
-		long endProcessingTimestamp = new Date().getTime();
-		long totalProcessingTime = endProcessingTimestamp - startProcessingTimestamp;
+		CompletableFuture<?>[] tasks = computeAndSync(requestParams, bagOfWords, paragraphSizes);
 		
-		ProcessedTextDto dto = ProcessedTextDto.builder()
+		long totalProcessingTime = System.currentTimeMillis() - startProcessingTimestamp;
+		
+		return ProcessedTextDto.builder()
 			.mostFrequentWord( getMostFrequentWord( bagOfWords ) )
 			.totalProcessingTimeInMllis( totalProcessingTime )
 			.avgProcessingTimeInMillis( totalProcessingTime / tasks.length )
 			.avgParagraphSize( getNumberOfWords( paragraphSizes ) )
 			.build();
+	}
 
-		return new Gson().toJson( dto );
+	private CompletableFuture<?>[] computeAndSync(ProcessRequestParams requestParams, 
+												PresenceCounter<String> bagOfWords,
+												PresenceCounter<Integer> paragraphSizes) 
+	{
+		CompletableFuture<?>[] tasks = IntStream
+			.range(requestParams.getStartParagraph(), requestParams.getEndParagraph() + 1).boxed()
+			.map(index -> new ProcessRequestRunnable(index, requestParams, paragraphSizes, bagOfWords))
+			.map(runnable -> CompletableFuture.runAsync(runnable, threadPool))
+			.toArray(CompletableFuture[]::new);
 
+		CompletableFuture.allOf(tasks).join();
+		return tasks;
 	}
 
 	private String getMostFrequentWord(PresenceCounter<String> bagOfWords) {
