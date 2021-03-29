@@ -1,15 +1,15 @@
 package ro.etr.victorbet.processingapp.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 import lombok.Data;
 
 @Data
-@Component
+@Configuration
 public class Config {
 
 	@Value("${infra.random-text-api.url}")
 	private String randomTextApiUrl;
-
+	
 }

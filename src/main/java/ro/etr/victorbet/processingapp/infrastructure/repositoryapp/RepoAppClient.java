@@ -6,12 +6,16 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
+import lombok.extern.slf4j.Slf4j;
+import ro.etr.victorbet.processingapp.config.KafkaConfig;
 import ro.etr.victorbet.processingapp.dto.ProcessedTextDto;
 
+@Slf4j
 @Component
 public class RepoAppClient {
 
-	private static final String TOPIC = "words.processed";
+	@Autowired
+	private KafkaConfig config;
 	
 	@Autowired
 	private Gson gson;
@@ -20,6 +24,7 @@ public class RepoAppClient {
 	private KafkaTemplate<String, String> kafkaTemplate;
 	
 	public void send( ProcessedTextDto dto ) {
-		kafkaTemplate.send(TOPIC, gson.toJson(dto));
+		log.info("sending message to the '{}' topic", config.getTopic());
+		kafkaTemplate.send(config.getTopic(), gson.toJson(dto));
 	}
 }
