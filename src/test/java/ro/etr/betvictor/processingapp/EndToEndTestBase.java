@@ -19,7 +19,7 @@ import com.google.gson.Gson;
 import ro.etr.betvictor.processingapp.config.Config;
 import ro.etr.betvictor.processingapp.config.KafkaConfig;
 import ro.etr.betvictor.processingapp.infrastructure.randomtext.RandomTextResponse;
-import ro.etr.betvictor.processingapp.infrastructure.repositoryapp.RepoAppClient;
+import ro.etr.betvictor.processingapp.infrastructure.repositoryapp.ProcessedTextPublisher;
 
 @SpringBootTest
 public abstract class EndToEndTestBase {
@@ -34,7 +34,7 @@ public abstract class EndToEndTestBase {
     protected KafkaTemplate<String,String> mockKafkaTemplate;
 
     @Autowired
-    protected RepoAppClient publisher;
+    protected ProcessedTextPublisher publisher;
     
 	protected static WireMockServer wireMockServer;
 	

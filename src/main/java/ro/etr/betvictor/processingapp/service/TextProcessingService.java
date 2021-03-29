@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import ro.etr.betvictor.processingapp.config.Config;
 import ro.etr.betvictor.processingapp.dto.ProcessedTextDto;
 import ro.etr.betvictor.processingapp.exceptions.Warning;
-import ro.etr.betvictor.processingapp.infrastructure.repositoryapp.RepoAppClient;
+import ro.etr.betvictor.processingapp.infrastructure.repositoryapp.ProcessedTextPublisher;
 import ro.etr.betvictor.processingapp.service.nlp.PresenceCounter;
 
 @Service
@@ -27,7 +27,7 @@ public class TextProcessingService {
 	private Config config;
 	
 	@Autowired
-	private RepoAppClient repoAppClient;
+	private ProcessedTextPublisher repoAppClient;
 
 	public ProcessedTextDto process(ProcessRequestParams requestParams) {
 

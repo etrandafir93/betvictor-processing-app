@@ -14,7 +14,7 @@ import ro.etr.betvictor.processingapp.dto.ProcessedTextDto;
 
 @Slf4j
 @Component
-public class RepoAppClient {
+public class ProcessedTextPublisher {
 
 	@Autowired
 	private KafkaConfig config;
