@@ -8,14 +8,18 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.google.gson.Gson;
 
 import ro.etr.betvictor.processingapp.config.Config;
+import ro.etr.betvictor.processingapp.config.KafkaConfig;
 import ro.etr.betvictor.processingapp.infrastructure.randomtext.RandomTextResponse;
+import ro.etr.betvictor.processingapp.infrastructure.repositoryapp.RepoAppClient;
 
 @SpringBootTest
 public abstract class EndToEndTestBase {
@@ -23,6 +27,15 @@ public abstract class EndToEndTestBase {
 	@Autowired
 	protected Config config;
 	
+	@Autowired
+	protected KafkaConfig kafkaConfig;
+
+    @Mock
+    protected KafkaTemplate<String,String> mockKafkaTemplate;
+
+    @Autowired
+    protected RepoAppClient publisher;
+    
 	protected static WireMockServer wireMockServer;
 	
 	private static String paragraphWithThreeWords = "<p>Roses are red.</p> ";
@@ -30,22 +43,24 @@ public abstract class EndToEndTestBase {
 
 
 	@BeforeAll
-	public static void setup() {
+	public static final void setup() {
 		wireMockServer = new WireMockServer(9999);
 		wireMockServer.start();
 		initDummyResponses();
 	}
 
 	@AfterAll
-	public static void teardown() {
+	public static final void teardown() {
 		wireMockServer.stop();
 	}
 
 	@BeforeEach
-	public void before() {
+	public final void before() {
 		config.setRandomTextApiUrl("http://localhost:9999/api/giberish/p-%d/%d-%d");
+    	publisher.setKafkaTemplate(mockKafkaTemplate);
 	}
-	
+
+
 	private static void initDummyResponses() {
 		
 		for(int count = 1; count<=6; count++) {

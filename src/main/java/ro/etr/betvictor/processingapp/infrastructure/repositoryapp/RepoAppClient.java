@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import ro.etr.betvictor.processingapp.config.KafkaConfig;
 import ro.etr.betvictor.processingapp.dto.ProcessedTextDto;
@@ -20,6 +22,8 @@ public class RepoAppClient {
 	@Autowired
 	private Gson gson;
 	
+	@Getter
+	@Setter
 	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;
 	

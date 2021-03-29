@@ -5,12 +5,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import lombok.Getter;
+import lombok.Data;
 
+@Data
 @Configuration
 public class KafkaConfig {
 
-	@Getter
 	@Value("${kafka.topic}")
 	private String topic;
 

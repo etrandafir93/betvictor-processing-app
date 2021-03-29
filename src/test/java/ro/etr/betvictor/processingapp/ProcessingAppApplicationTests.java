@@ -1,25 +1,29 @@
 package ro.etr.betvictor.processingapp;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.IOException;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.google.gson.Gson;
+
 import ro.etr.betvictor.processingapp.controller.TextProcessingContoller;
 import ro.etr.betvictor.processingapp.dto.ProcessedTextDto;
 
+@ExtendWith(MockitoExtension.class)   
 class ProcessingAppApplicationTests extends EndToEndTestBase {
 
 	@Autowired
 	private TextProcessingContoller controller;
 
-
+    
 	@Test
-	void calculateAverage() throws IOException, InterruptedException {
+	void calculateAverage() {
 
 		ProcessedTextDto response = (ProcessedTextDto)controller.processText(4, 4, 3, 5).getBody();
 
@@ -45,8 +49,8 @@ class ProcessingAppApplicationTests extends EndToEndTestBase {
 		long time = System.currentTimeMillis() - start;
 		float avgTime = time / 15.0f;
 
-		assertThat( response.getTotalProcessingTimeInMllis() ).isStrictlyBetween( time-200, time );
-		assertThat( response.getAvgProcessingTimeInMillis() ).isStrictlyBetween( avgTime - 10.0f, avgTime );
+		assertThat( response.getTotalProcessingTimeInMllis() ).isStrictlyBetween( time-400, time );
+		assertThat( response.getAvgProcessingTimeInMillis() ).isLessThan( avgTime );
 	}
 
 	@Test
@@ -69,4 +73,14 @@ class ProcessingAppApplicationTests extends EndToEndTestBase {
 		assertThat( response.getStatusCode() ).isEqualTo( HttpStatus.PARTIAL_CONTENT );
 	}
 
+	@Test
+	void appIsSendingMessageThroughKafka() {
+
+		kafkaConfig.setTopic("test.topic");
+		
+		ProcessedTextDto response = (ProcessedTextDto)controller.processText(4, 4, 3, 5).getBody();
+		String json = new Gson().toJson(response);
+				
+		verify(mockKafkaTemplate).send("test.topic", json);
+	}
 }
