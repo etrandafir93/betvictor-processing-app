@@ -7,8 +7,8 @@ import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import ro.etr.victorbet.processingapp.exceptions.RandomTextServerException;
 import ro.etr.victorbet.processingapp.exceptions.Warning;
-import ro.etr.victorbet.processingapp.infrastructure.RandomTextClient;
-import ro.etr.victorbet.processingapp.infrastructure.RandomTextResponse;
+import ro.etr.victorbet.processingapp.infrastructure.randomtext.RandomTextClient;
+import ro.etr.victorbet.processingapp.infrastructure.randomtext.RandomTextResponse;
 import ro.etr.victorbet.processingapp.service.nlp.NaturalLanguageProcessor;
 import ro.etr.victorbet.processingapp.service.nlp.PresenceCounter;
 

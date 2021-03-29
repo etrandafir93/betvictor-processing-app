@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import lombok.Getter;
-import ro.etr.victorbet.processingapp.infrastructure.RandomTextResponse;
+import ro.etr.victorbet.processingapp.infrastructure.randomtext.RandomTextResponse;
 
 @Getter
 public class NaturalLanguageProcessor {

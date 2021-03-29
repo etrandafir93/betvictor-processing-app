@@ -46,7 +46,7 @@ class ProcessingAppApplicationTests extends EndToEndTestBase {
 		long avgTime = time / 15;
 
 		assertThat( response.getTotalProcessingTimeInMllis() ).isStrictlyBetween( time-50, time+50 );
-		assertThat( response.getAvgProcessingTimeInMillis() ).isStrictlyBetween( avgTime-5, avgTime+5 );
+		assertThat( response.getAvgProcessingTimeInMillis() ).isStrictlyBetween( avgTime - 1.0f, avgTime + 1.0f );
 	}
 
 	@Test

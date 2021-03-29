@@ -15,7 +15,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.google.gson.Gson;
 
 import ro.etr.victorbet.processingapp.config.Config;
-import ro.etr.victorbet.processingapp.infrastructure.RandomTextResponse;
+import ro.etr.victorbet.processingapp.infrastructure.randomtext.RandomTextResponse;
 
 @SpringBootTest
 public abstract class EndToEndTestBase {

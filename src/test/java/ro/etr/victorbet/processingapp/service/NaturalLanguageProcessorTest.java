@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import ro.etr.victorbet.processingapp.infrastructure.RandomTextResponse;
+import ro.etr.victorbet.processingapp.infrastructure.randomtext.RandomTextResponse;
 import ro.etr.victorbet.processingapp.service.nlp.NaturalLanguageProcessor;
 
  

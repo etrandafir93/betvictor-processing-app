@@ -1,4 +1,4 @@
-package ro.etr.victorbet.processingapp.infrastructure;
+package ro.etr.victorbet.processingapp.infrastructure.randomtext;
 
 import java.net.URI;
 import java.net.http.HttpClient;

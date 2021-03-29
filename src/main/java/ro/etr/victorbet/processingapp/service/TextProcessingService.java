@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import ro.etr.victorbet.processingapp.config.Config;
 import ro.etr.victorbet.processingapp.dto.ProcessedTextDto;
 import ro.etr.victorbet.processingapp.exceptions.Warning;
+import ro.etr.victorbet.processingapp.infrastructure.repositoryapp.RepoAppClient;
 import ro.etr.victorbet.processingapp.service.nlp.PresenceCounter;
 
 @Service
@@ -24,6 +25,9 @@ public class TextProcessingService {
 
 	@Autowired
 	private Config config;
+	
+	@Autowired
+	private RepoAppClient repoAppClient;
 
 	public ProcessedTextDto process(ProcessRequestParams requestParams) {
 
@@ -37,13 +41,17 @@ public class TextProcessingService {
 		
 		long totalProcessingTime = System.currentTimeMillis() - startProcessingTimestamp;
 		
-		return ProcessedTextDto.builder()
+		ProcessedTextDto dto = ProcessedTextDto.builder()
 			.mostFrequentWord( getMostFrequentWord( bagOfWords ) )
 			.totalProcessingTimeInMllis( totalProcessingTime )
-			.avgProcessingTimeInMillis( totalProcessingTime / getNumberOfParagraphs(paragraphSizes) )
+			.avgProcessingTimeInMillis( 1.0f * totalProcessingTime / getNumberOfParagraphs(paragraphSizes) )
 			.avgParagraphSize( getNumberOfWords( paragraphSizes ) )
 			.warnings( warnings )
 			.build();
+		
+		repoAppClient.send(dto);
+		
+		return dto;
 	}
 
 	private void computeAndSync(ProcessRequestParams requestParams, 
@@ -74,14 +82,14 @@ public class TextProcessingService {
 			.getKey();
 	}
 
-	private int getNumberOfWords(PresenceCounter<Integer> paragraphSizes) {
+	private float getNumberOfWords(PresenceCounter<Integer> paragraphSizes) {
 		
 		int nrOfWords = paragraphSizes.getEntrySet().stream()
 			.map( entry -> entry.getKey() * entry.getValue().get() )
 			.mapToInt(Integer :: intValue)
 			.sum();
 		
-		return nrOfWords / getNumberOfParagraphs(paragraphSizes);
+		return 1.0f * nrOfWords / getNumberOfParagraphs(paragraphSizes);
 	}
 
 	private int getNumberOfParagraphs(PresenceCounter<Integer> paragraphSizes) {

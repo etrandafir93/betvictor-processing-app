@@ -16,10 +16,10 @@ public class ProcessedTextDto {
 	private String mostFrequentWord;
 	
 	@SerializedName("avg_paragraph_size")
-	private int avgParagraphSize;
+	private float avgParagraphSize;
 
 	@SerializedName("avg_paragraph_processing_time")
-	private long avgProcessingTimeInMillis;
+	private float avgProcessingTimeInMillis;
 
 	@SerializedName("total_processing_time")
 	private long totalProcessingTimeInMllis;
