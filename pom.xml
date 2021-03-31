@@ -14,9 +14,17 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>processing-app</name>
 	<description>Demo project for Spring Boot</description>
+	
 	<properties>
 		<java.version>11</java.version>
 	</properties>
+	
+	<properties>
+	  <sonar.projectKey>emanueltrandafir_betvictor-processing-app</sonar.projectKey>
+	  <sonar.organization>emanueltrandafir-org</sonar.organization>
+	  <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+	</properties>
+	
 	<dependencies>
 
 		<dependency>
