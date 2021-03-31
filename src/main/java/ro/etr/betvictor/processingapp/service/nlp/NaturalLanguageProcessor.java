@@ -24,26 +24,26 @@ public class NaturalLanguageProcessor {
 	
 	private PresenceCounter<Integer> getAvgParagraphSize(List<String> paragraphs) {
 
-		PresenceCounter<Integer> avgParagraphSize = new PresenceCounter<>();
+		PresenceCounter<Integer> sizes = new PresenceCounter<>();
 		
 		paragraphs.stream()
 			.map( this :: breakIntoWords )
 			.map( List :: size )
-			.forEach( avgParagraphSize :: add );
+			.forEach( sizes :: add );
 		
-		return avgParagraphSize;
+		return sizes;
 	}
 	
 	private PresenceCounter<String> getBagOfWords(List<String> paragraphs) {
 		
-		PresenceCounter<String> bagOfWords = new PresenceCounter<>();
+		PresenceCounter<String> words = new PresenceCounter<>();
 		
 		paragraphs.stream()
 			.map( this :: breakIntoWords )
 			.flatMap( List :: stream )
-			.forEach( bagOfWords :: add );
+			.forEach( words :: add );
 		
-		return bagOfWords;
+		return words;
 	}
 
 	public List<String> breakIntoParagraphs(String html) {

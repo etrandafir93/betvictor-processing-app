@@ -28,7 +28,7 @@ public class TextProcessingContoller {
 	}
 	
 	@GetMapping("text")
-	public ResponseEntity<?> processText(
+	public ResponseEntity<ProcessedTextDto> processText(
 				@RequestParam(name = "p_start") int startParagraph, 
 				@RequestParam(name = "p_end") int endParagraph, 
 				@RequestParam(name = "w_count_min") int minWords, 
@@ -46,7 +46,7 @@ public class TextProcessingContoller {
 		try {
 			ProcessedTextDto dto = service.process( request );
 			HttpStatus statusCode = dto.withoutWarnings()? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT; 
-			return new ResponseEntity<ProcessedTextDto>(dto, statusCode);
+			return new ResponseEntity<>(dto, statusCode);
 		} 
 		catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

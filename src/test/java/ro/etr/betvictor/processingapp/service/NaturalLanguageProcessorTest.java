@@ -11,7 +11,7 @@ import ro.etr.betvictor.processingapp.infrastructure.randomtext.RandomTextRespon
 import ro.etr.betvictor.processingapp.service.nlp.NaturalLanguageProcessor;
 
  
-public class NaturalLanguageProcessorTest {
+class NaturalLanguageProcessorTest {
 
 	private NaturalLanguageProcessor nlp = new NaturalLanguageProcessor();
 
@@ -20,7 +20,7 @@ public class NaturalLanguageProcessorTest {
 		
 	@ParameterizedTest
 	@CsvSource({"0,0", "1,1", "5,5", "100,100"})
-	public void testBreakingIntoParagraphs(int input, int expected) {
+	void testBreakingIntoParagraphs(int input, int expected) {
 		
 		List<String> result = nlp.breakIntoParagraphs( paragraphs(input) );
 		
@@ -32,7 +32,7 @@ public class NaturalLanguageProcessorTest {
 
 	@ParameterizedTest
 	@CsvSource({"0,0", "1,1", "5,5", "100,100"})
-	public void testAddingToBagOfWordsMap(int input, int expected) {
+	void testAddingToBagOfWordsMap(int input, int expected) {
 		
 		RandomTextResponse dummyResponse = new RandomTextResponse();
 		dummyResponse.setTextOut( paragraphs(input) );

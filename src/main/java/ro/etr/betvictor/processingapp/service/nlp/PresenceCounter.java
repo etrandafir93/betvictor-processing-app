@@ -1,6 +1,7 @@
 package ro.etr.betvictor.processingapp.service.nlp;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
@@ -11,7 +12,7 @@ import lombok.Getter;
 public class PresenceCounter <T> {
 	
 	@Getter
-	private Map<T, MutableInt> values = new Hashtable<>();
+	private Map<T, MutableInt> values = new HashMap<>(); 
 
 	public void add(T newValue) {
 		add(newValue, 1);
@@ -31,10 +32,8 @@ public class PresenceCounter <T> {
 
 	public void merge(PresenceCounter<T> newWords) {
 		newWords.getEntrySet()
-			.forEach( (newWord) -> { 
-				add( newWord.getKey(), newWord.getValue().get() ); 
-			});
+			.forEach( newWord -> add( newWord.getKey(), newWord.getValue().get() ));
 	}
 	
-	public static Comparator<Entry<?, MutableInt>> compareEntriesByPresence = (e1, e2) -> { return e1.getValue().get() - e2.getValue().get(); };
+	public static final Comparator<Entry<?, MutableInt>> BY_PRESENCE = (e1, e2) -> e1.getValue().get() - e2.getValue().get();
 }

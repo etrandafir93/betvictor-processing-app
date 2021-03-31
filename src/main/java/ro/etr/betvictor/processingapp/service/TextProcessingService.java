@@ -1,6 +1,8 @@
 package ro.etr.betvictor.processingapp.service;
 
 import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -14,6 +16,7 @@ import ro.etr.betvictor.processingapp.config.Config;
 import ro.etr.betvictor.processingapp.dto.ProcessedTextDto;
 import ro.etr.betvictor.processingapp.exceptions.Warning;
 import ro.etr.betvictor.processingapp.infrastructure.repositoryapp.ProcessedTextPublisher;
+import ro.etr.betvictor.processingapp.service.nlp.MutableInt;
 import ro.etr.betvictor.processingapp.service.nlp.PresenceCounter;
 
 @Service
@@ -76,10 +79,13 @@ public class TextProcessingService {
 	}
 
 	private String getMostFrequentWord(PresenceCounter<String> bagOfWords) {
-		return bagOfWords.getEntrySet().stream()
-			.max( PresenceCounter.compareEntriesByPresence )
-			.get()
-			.getKey();
+		Optional<Entry<String, MutableInt>> freq = bagOfWords.getEntrySet().stream()
+			.max( PresenceCounter.BY_PRESENCE );
+		
+		if(freq.isPresent()) {
+			return freq.get().getKey();
+		}
+		return "";
 	}
 
 	private float getNumberOfWords(PresenceCounter<Integer> paragraphSizes) {
