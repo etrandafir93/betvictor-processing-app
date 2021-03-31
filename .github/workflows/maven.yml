@@ -23,6 +23,6 @@ jobs:
     
     - name: Build and analyze
       env:
-        GITHUB_TOKEN: ${{ secrets.GIT_AUTH_TOKEN }}   
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: mvn -B test verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
