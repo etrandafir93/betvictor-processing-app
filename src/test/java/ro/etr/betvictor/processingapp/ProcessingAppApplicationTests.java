@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +13,6 @@ import com.google.gson.Gson;
 import ro.etr.betvictor.processingapp.controller.TextProcessingContoller;
 import ro.etr.betvictor.processingapp.dto.ProcessedTextDto;
 
-@ExtendWith(MockitoExtension.class)   
 class ProcessingAppApplicationTests extends EndToEndTestBase {
 
 	@Autowired
@@ -46,7 +43,7 @@ class ProcessingAppApplicationTests extends EndToEndTestBase {
 		// 1 + 2 + 3 + 4 + 5 => 15 paragraphs, 5 requests
 		ProcessedTextDto response = (ProcessedTextDto)controller.processText(1, 5, 3, 5).getBody();
 		
-		long time = System.currentTimeMillis() - start;
+		long time = System.currentTimeMillis() - start + 100;
 		float avgTime = time / 15.0f;
 
 		assertThat( response.getTotalProcessingTimeInMllis() ).isStrictlyBetween( time-400, time );

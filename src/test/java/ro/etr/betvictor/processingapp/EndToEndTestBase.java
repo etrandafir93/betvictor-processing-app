@@ -8,10 +8,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.google.gson.Gson;
@@ -22,6 +25,8 @@ import ro.etr.betvictor.processingapp.infrastructure.randomtext.RandomTextRespon
 import ro.etr.betvictor.processingapp.infrastructure.repositoryapp.ProcessedTextPublisher;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)   
 public abstract class EndToEndTestBase {
 
 	@Autowired
