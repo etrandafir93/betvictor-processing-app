@@ -1,10 +1,7 @@
 # betvictor-processing-app
 
-
-
-[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/dashboard?id=emanueltrandafir_betvictor-processing-app)
-
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=emanueltrandafir_hattrick-contribution-calculator&metric=alert_status)](https://sonarcloud.io/dashboard?id=emanueltrandafir_betvictor-processing-app)
+ 
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=emanueltrandafir_betvictor-processing-app)](https://sonarcloud.io/dashboard?id=emanueltrandafir_betvictor-processing-app)
 
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=emanueltrandafir_hattrick-contribution-calculator&metric=ncloc)](https://sonarcloud.io/dashboard?id=emanueltrandafir_betvictor-processing-app)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=emanueltrandafir_hattrick-contribution-calculator&metric=coverage)](https://sonarcloud.io/dashboard?id=emanueltrandafir_betvictor-processing-app)
@@ -18,3 +15,5 @@
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=emanueltrandafir_hattrick-contribution-calculator&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=emanueltrandafir_betvictor-processing-app)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=emanueltrandafir_hattrick-contribution-calculator&metric=security_rating)](https://sonarcloud.io/dashboard?id=emanueltrandafir_betvictor-processing-app)
 [![Realiability Rating](https://sonarcloud.io/api/project_badges/measure?project=emanueltrandafir_hattrick-contribution-calculator&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=emanueltrandafir_betvictor-processing-app)
+
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/dashboard?id=emanueltrandafir_betvictor-processing-app)
